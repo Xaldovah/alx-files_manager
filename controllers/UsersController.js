@@ -1,7 +1,8 @@
 import { createHash } from 'crypto';
 import dbClient from '../utils/db';
+import { redisClient } from '../utils/redis';
 
-const postNew = async (req, res) => {
+export const postNew = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email) {
@@ -37,4 +38,25 @@ const postNew = async (req, res) => {
   return res.status(200).json({ message: 'User creation successful' });
 };
 
-export default postNew;
+export const getMe = async (req, res) => {
+  const token = req.headers['x-token'];
+
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const userId = await redisClient.get(`auth_${token}`);
+
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const user = await dbClient.collection('users').findOne({ _id: userId });
+
+  if (!user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  res.status(200).json({ id: user._id, email: user.email });
+  return res.status(200).end();
+};
