@@ -1,15 +1,19 @@
-import express from 'express';
-import { getStatus, getStats } from '../controllers/AppController';
-import { postNew } from '../controllers/UsersController';
-import { getConnect, getDisconnect } from '../controllers/AuthController';
-
-
+const express = require('express');
 const router = express.Router();
+const AppController = require('../controllers/AppController');
+const UsersController = require('../controllers/UsersController');
+const FilesController = require('../controllers/FilesController');
 
-router.get('/status', getStatus);
-router.get('/stats', getStats);
-router.post('/users', postNew);
-router.get('/connect', getConnect);
-router.get('/disconnect', getDisconnect);
+router.get('/status', AppController.getStatus);
+router.get('/stats', AppController.getStats);
+router.post('/users', UsersController.postNew);
 
-export default router;
+router.get('/connect', AuthController.getConnect);
+router.get('/disconnect', AuthController.getDisconnect);
+router.get('/users/me', UserController.getMe);
+
+router.post('/files', FilesController.postUpload);
+router.get('/files/:id', FilesController.getShow);
+router.get('/files', FilesController.getIndex);
+
+module.exports = router;
