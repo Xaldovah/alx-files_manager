@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable import/no-unresolved */
 import fs from 'fs';
 import readline from 'readline';
 import { promisify } from 'util';

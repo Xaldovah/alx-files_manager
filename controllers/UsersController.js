@@ -17,18 +17,16 @@ export default class UsersController {
       res.status(400).json({ error: 'Missing password' });
       return;
     }
-    const user = await (await dbClient.usersCollection()).findOne({ email });
-
+    const user = await dbClient.users.findOne({ email });
     if (user) {
       res.status(400).json({ error: 'Already exist' });
       return;
     }
-    const insertionInfo = await (await dbClient.usersCollection())
-      .insertOne({ email, password: sha1(password) });
-    const userId = insertionInfo.insertedId.toString();
+    const hashedPassword = sha1(password);
+    const newUser = await dbClient.users.insertOne({ email, password: hashedPassword });
 
     userQueue.add({ userId });
-    res.status(201).json({ email, id: userId });
+    res.status(201).json({ email, id: newUser.insertedId });
   }
 
   static async getMe(req, res) {
